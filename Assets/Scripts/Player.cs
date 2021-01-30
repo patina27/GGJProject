@@ -69,9 +69,13 @@ public class Player : MonoBehaviour
             }
             else if (!GameController.instance.protectedMode)
             {
-                GameController.instance.oxygen = GameController.instance.oxygen - 0.1f;
-                GameController.instance.protectedMode = true;
+                GameController.instance.GetHit();
             }
+        }
+        if (collision.gameObject.tag == "oxygen")
+        {
+            Destroy(collision.gameObject);
+            GameController.instance.GainOxygen();
         }
     }
 }
