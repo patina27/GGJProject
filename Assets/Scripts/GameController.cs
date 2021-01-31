@@ -12,13 +12,16 @@ public class GameController : MonoBehaviour
     public Camera cam;
     public GameObject player;
     public GameObject explosionGO;
+    public GameObject ultimateGO;
     public GameObject oxygenGO;
     public GameObject healthBar;
-    public GameObject gameOverCanvas;
     public GameObject gameplayCanvas;
     public GameObject textCombo;
+    public GameObject gameoverCanvas;
+    public GameObject textMaxCombo;
+    public GameObject textTime;
     public KeyCode keyRestart;
-    public int combo;
+    public int comboThreshold;
 
     public float dashTime;
     public float cdTime;
@@ -43,6 +46,9 @@ public class GameController : MonoBehaviour
     private float _protectTimer;
     private float _lastFlash;
     private float _oxygenTimer;
+    private int _combo;
+    private int _maxCombo;
+
 
     public void GainOxygen()
     {
@@ -67,7 +73,7 @@ public class GameController : MonoBehaviour
     {
         LoseOxygen();
         protectedMode = true;
-        combo = 0;
+        _combo = 0;
     }
     void Awake()
     {
@@ -81,7 +87,7 @@ public class GameController : MonoBehaviour
         _spawnOffset = 1.0f;
         _spawnOxygenOffset = 2f;
         _isGameActive = true;
-        gameOverCanvas.SetActive(false);
+        gameoverCanvas.SetActive(false);
         StartCoroutine("SpawnObstacle");
         StartCoroutine("SpawnOxygen");
         dashEnabled = true;
@@ -92,7 +98,8 @@ public class GameController : MonoBehaviour
         _lastFlash = -1f;
         _oxygenTimer = Time.time;
         oxygen = 1f;
-        combo = 0;
+        _combo = 0;
+        _maxCombo = 0;
     }
 
 
@@ -105,7 +112,6 @@ public class GameController : MonoBehaviour
         RegularDecreaseOxygen();
         UpdateUI();
         GameEndingTracker();
-        ComboTracker();
     }
 
     private IEnumerator SpawnObstacle()
@@ -170,6 +176,13 @@ public class GameController : MonoBehaviour
                 _dashTimer = Time.time;
                 Vector2 dir = player.GetComponent<Rigidbody2D>().velocity.normalized;
                 Instantiate(oxygenGO, player.transform.position - new Vector3(dir.x, dir.y), Quaternion.identity);
+                
+                if (_combo >= comboThreshold)
+                {
+                    Instantiate(ultimateGO, player.transform);
+                }
+
+                LoseOxygen();
             }
 
             if (Time.time - _dashTimer > dashTime)
@@ -177,11 +190,12 @@ public class GameController : MonoBehaviour
                 dashMode = false;
                 if (dashCollision)
                 {
-                    combo += 1;
+                    _combo += 1;
+                    _maxCombo = (_maxCombo < _combo) ? _combo : _maxCombo;
                 }
                 else
                 {
-                    combo = 0;
+                    _combo = 0;
                 }
                 dashCollision = false;
                 dashEnabled = false;
@@ -229,7 +243,7 @@ public class GameController : MonoBehaviour
     {
         Slider slider = healthBar.GetComponent<Slider>();
         slider.value = oxygen;
-        textCombo.GetComponent<Text>().text = combo.ToString();
+        textCombo.GetComponent<Text>().text = _combo.ToString();
     }
 
     private void RegularDecreaseOxygen()
@@ -245,7 +259,7 @@ public class GameController : MonoBehaviour
     {
         if (oxygen == 0f)
         {
-            gameOverCanvas.SetActive(true);
+            gameoverCanvas.SetActive(true);
             gameplayCanvas.SetActive(false);
             _isGameActive = false;
         }
@@ -263,11 +277,6 @@ public class GameController : MonoBehaviour
     {
         Debug.Log("restart game called!");
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    private void ComboTracker()
-    {
-
     }
 }
 
