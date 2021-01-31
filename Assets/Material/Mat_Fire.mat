@@ -21,10 +21,10 @@ Material:
     serializedVersion: 3
     m_TexEnvs: []
     m_Floats:
-    - Vector1_354AE81A: 0.8
-    - Vector1_6DD2751C: -0.5
-    - Vector1_7E10CB17: 1.6
-    - Vector1_A742BA4A: 1
+    - Vector1_354AE81A: 0.7
+    - Vector1_6DD2751C: -1
+    - Vector1_7E10CB17: 1.5
+    - Vector1_A742BA4A: 1.2
     m_Colors:
     - Color_9C66F1D2: {r: 0.21333557, g: 0.5272523, b: 1.3705193, a: 0}
     - Vector2_30621582: {r: 1, g: 1, b: 0, a: 0}
